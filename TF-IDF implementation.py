@@ -1,3 +1,4 @@
+#import required modules and packages
 import os
 import operator
 from math import log10,sqrt
@@ -6,6 +7,7 @@ from nltk.tokenize import RegexpTokenizer
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 
+#Regular expression used for tokenizing. Then stemming and stopword removal were performed
 tokenizer = RegexpTokenizer(r'[a-zA-Z]+')
 stemmer=PorterStemmer()
 sw=stopwords.words('english')
@@ -15,13 +17,14 @@ sp={}
 spv={}
 ld=[]
 
-
+#Function for tokenization
 def tokenize(doc):
     doc=doc.lower()
     tokens=tokenizer.tokenize(doc)
     nonswtokens=[stemmer.stem(token) for token in tokens if token not in sw]
     return nonswtokens
 
+#Function to calculate IDF
 def incdfs(tfvec):
     for token in set(tfvec):
         if token not in dfs:
@@ -29,6 +32,7 @@ def incdfs(tfvec):
         else:
             dfs[token]+=1
             
+#Function to read files from the corpus            
 def readfiles(corpus_root):
     for filename in os.listdir(corpus_root):
         file = open(os.path.join(corpus_root, filename), "r", encoding='UTF-8')
@@ -36,7 +40,6 @@ def readfiles(corpus_root):
         file.close()
         tokens=tokenize(doc)
         tfvec=Counter(tokens)
-        #print(tfvec)
         ld.append(dict(tfvec))
         sp[filename]=tfvec
         incdfs(tfvec)
@@ -45,15 +48,11 @@ def readfiles(corpus_root):
         idfs[token]= log10(ndoc/df)
     for filename,tfvec in sp.items():
         spv[filename]=caltfidfvec(tfvec)
-    #print(spv)
-    #print(idfs)
-    #print(ndoc)
-    #print(sp)
-    
+
+#Function to find TF-IDF vector
 def caltfidfvec(tfvec):
     tfidfvec={}
     vectorlength=0.0
-    #print(tfvec)
     for token in tfvec:
         tfidf=(1+log10(tfvec[token]))*getidf(token)
         tfidfvec[token]=tfidf
@@ -61,25 +60,23 @@ def caltfidfvec(tfvec):
     if vectorlength>0:
         for token in tfvec:
             tfidfvec[token]/=sqrt(vectorlength)
-    #print(tfidfvec)
     return tfidfvec
 
+#Function to find cosine similarity
 def cosinesim(vec1,vec2):
     commonterms=set(vec1).intersection(vec2)
     sim=0.0
     for token in commonterms:
         sim+=vec1[token]*vec2[token]
     return sim
-
+#Function for cosine similarity between two document vectors
 def docdocsim(filename1,filename2):
-    #print(gettfidfvec(filename1))
-    #print(gettfidfvec(filename2))
     return cosinesim(gettfidfvec(filename1),gettfidfvec(filename2))
     
 def gettfidfvec(filename):
     return spv[filename]
-    #print(sp)
 
+#Function for cosine similarity between a document vector and a query vector
 def query(qstring):
     tokens=tokenize(qstring)
     tfvec=Counter(tokens)
@@ -94,7 +91,7 @@ def getcount(token):
             if(k == token):
                 count=count+d[k]
     return count
-#print(sp)
+
 def getidf(token):
     if token not in idfs:
         return 0
@@ -114,8 +111,6 @@ def querydocsim(qstring,filename):
         for token in tfvec:
             tfidfvec[token]/=sqrt(vectorlength)
     return cosinesim(tfidfvec,gettfidfvec(filename))
-#print(sp.items())
-#print(sp)
 
 readfiles('E:\Data Mining\Assignments\Assignment1\presidential_debates')
 
