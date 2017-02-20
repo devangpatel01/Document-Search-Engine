@@ -14,6 +14,7 @@ Implemented a toy search engine.The code reads a corpus and produces TF-IDF vect
 6) **Stemming** is the process of reducing inflected word to its word stem.  
 7) **NLTK (Natural Language Toolkit)** is a suite of libraries and programs for symbolic and statistical Natural Language Processing (NLP) for English written in python programming language.  
 8) **Collections** is the module in python implements specialized container datatypes providing alternatives to Python’s general purpose built-in containers, dict, list, set, and tuple.  
+9) **Stop Words** are the words which donot contain important significance to the search queries.
 
 ### Formulas:
 1) Cosine Similarity (d1, d2) =  Dot product(d1, d2) / ||d1|| * ||d2||  
